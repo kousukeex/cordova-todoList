@@ -1,3 +1,6 @@
+var taskStr = "";
+var taskrow = $("ul#tasklist li:first").clone(true);
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,36 +21,51 @@
  */
 var app = {
     // Application Constructor
+    // 初期化
     initialize: function() {
-        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+        taskrow = $("ul#tasklist li:first").clone(true);
+        $("ul#tasklist").empty();
         $(document).ready(function(){
-            $(".modal").modal()
+            $(".modal").modal();
         });
+        this.onload();
     },
 
+    // ロードしたときの関数
     onload: function(){
-        document.addEventListener('#addTask',this.addTaskModal,false)
+        // タスクリストからの削除
+        $(".deleteRow").on('click',function(){
+            var parent = $(this).parent("div").parent();
+            console.log(parent);
+            $(parent).remove();
+        });
+        // タスク追加欄のテキストが変更されたら、常に文字列を受け取る
+        $("input#task").on('change',function(){
+            taskStr = $("#task").val();
+        });
+        // ダイアログの追加が押されたときの処理
+        // クローン->書き換え->イベント登録->リストに追加
+        $("#addTaskModal").on('click',function(){
+            var newtaskrow = $(taskrow).clone(true);
+            $(newtaskrow).find("div").html(taskStr + '<a href="#!" class="secondary-content deleteRow"><i class="material-icons">delete</i></a>');
+            console.log(newtaskrow);
+            $(newtaskrow).on('click','.deleteRow',function(){
+                var parent = $(this).parent("div").parent();
+                console.log(parent);
+                $(parent).remove();
+            });
+            $("ul#tasklist").append(newtaskrow);
+        });
+
+
     },
 
     // deviceready Event Handler
     //
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
-    onDeviceReady: function() {
-        this.receivedEvent('deviceready');
-    },
 
     // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
-    },
 
     addTaskModal: function(){
 
