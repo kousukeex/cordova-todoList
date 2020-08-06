@@ -1,4 +1,5 @@
 var taskStr = "";
+var taskrow = $("ul#tasklist li:first").clone(true);
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,33 +21,40 @@ var taskStr = "";
  */
 var app = {
     // Application Constructor
+    // 初期化
     initialize: function() {
+        taskrow = $("ul#tasklist li:first").clone(true);
+        $("ul#tasklist").empty();
         $(document).ready(function(){
             $(".modal").modal();
         });
         this.onload();
     },
 
+    // ロードしたときの関数
     onload: function(){
-        document.addEventListener('#addTask',this.addTaskModal,false)
+        // タスクリストからの削除
         $(".deleteRow").on('click',function(){
             var parent = $(this).parent("div").parent();
             console.log(parent);
             $(parent).remove();
         });
+        // タスク追加欄のテキストが変更されたら、常に文字列を受け取る
         $("input#task").on('change',function(){
             taskStr = $("#task").val();
         });
+        // ダイアログの追加が押されたときの処理
+        // クローン->書き換え->イベント登録->リストに追加
         $("#addTaskModal").on('click',function(){
-            var taskrow = $("ul#tasklist li:first").clone(true);
-            $(taskrow).find("div").html(taskStr + '<a href="#!" class="secondary-content deleteRow"><i class="material-icons">send</i></a>');
-            console.log(taskrow);
-            $(taskrow).on('click','.deleteRow',function(){
+            var newtaskrow = $(taskrow).clone(true);
+            $(newtaskrow).find("div").html(taskStr + '<a href="#!" class="secondary-content deleteRow"><i class="material-icons">delete</i></a>');
+            console.log(newtaskrow);
+            $(newtaskrow).on('click','.deleteRow',function(){
                 var parent = $(this).parent("div").parent();
                 console.log(parent);
                 $(parent).remove();
             });
-            $("ul#tasklist").append(taskrow);
+            $("ul#tasklist").append(newtaskrow);
         });
 
 
